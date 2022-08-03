@@ -13,11 +13,15 @@ Make sure you turn on the audio 😎
 
 https://user-images.githubusercontent.com/18666879/182515940-505fb5ce-5c86-4faa-ad20-83fb2e2ab482.mp4
 
-### Running locally
+### Running locally 💻
 
-You will need to replace the `embedURL` variable with your own embed URL using the [Hyperbeam API](https://hyperbeam.dev). **API keys are free!** 🎉
+You will need to replace the `embedURL` variable with your own embed URL using the [Hyperbeam API](https://hyperbeam.dev).
 
-```
+**API keys are free!** 🎉
+
+After you've replaced the `embedURL` variable, you can run the following commands:
+
+```bash
 npm install
 npm run dev
 ```
