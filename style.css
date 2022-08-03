@@ -7,3 +7,8 @@ html, body {
 	top: 0;
 	left: 0;
 }
+
+#hbcontainer {
+	position: fixed;
+	visibility: hidden;
+}
