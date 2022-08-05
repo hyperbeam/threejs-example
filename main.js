@@ -22,9 +22,7 @@ async function main(embedURL) {
 	const pointer = new THREE.Vector2()
 	const raycaster = new THREE.Raycaster()
 	const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .0001, 100)
-	camera.target = new THREE.Vector3(0, 0, 0)
-	camera.position.set(0, 0, 1)
-	camera.lookAt(camera.target)
+	camera.position.set(0, 0.2, 0.5)
 
 	const listener = new THREE.AudioListener()
 	const sound = new THREE.PositionalAudio(listener)
@@ -32,14 +30,15 @@ async function main(embedURL) {
 
 	const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: !true })
 	renderer.setPixelRatio(window.devicePixelRatio)
-	renderer.setClearColor(0x000000, 1)
+	renderer.setClearColor(0xFF889B, 1)
 	renderer.setSize(window.innerWidth, window.innerHeight)
 	threejscontainer.appendChild(renderer.domElement)
 
 	const controls = new OrbitControls(camera, renderer.domElement)
+	controls.target.set(0, 0.2, 0)
 
 	// The default aspect ratio of the virtual computer is 16:9
-	const width = 1
+	const width = 0.62
 	const height = width * 9 / 16
 	const texture = new THREE.Texture()
 	const geometry = new THREE.PlaneBufferGeometry(width, height)
@@ -51,7 +50,9 @@ async function main(embedURL) {
 	material.side = THREE.DoubleSide
 
 	const plane = new THREE.Mesh(geometry, material)
+	plane.translateY(height / 2 + 0.04)
 	scene.add(plane)
+	scene.add(checkerboardMesh(1, 15))
 	plane.add(sound)
 
 	const hb = await Hyperbeam(hbcontainer, embedURL, {
@@ -153,4 +154,24 @@ async function main(embedURL) {
 		controls.update()
 		renderer.render(scene, camera)
 	}
+}
+
+function checkerboardMesh(width, segments) {
+	const geometry = new THREE.PlaneGeometry(width, width, segments, segments).toNonIndexed()
+	const material = new THREE.MeshBasicMaterial({
+		vertexColors: true,
+		transparent: true,
+		side: THREE.DoubleSide
+	})
+	const positionAttribute = geometry.getAttribute("position")
+	const colors = []
+	console.log(segments * segments, positionAttribute.count / 6)
+	for (let i = 0; i < positionAttribute.count; i++) {
+		colors.push(0, 0, 0, i % 6 === i % 12 ? 1 : 0)
+	}
+	geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4))
+	const mesh = new THREE.Mesh(geometry, material)
+	mesh.rotateX(Math.PI / 2)
+	mesh.translateY(width / 2)
+	return mesh
 }
