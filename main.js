@@ -3,14 +3,21 @@ import * as THREE from "three"
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls"
 import Hyperbeam from "@hyperbeam/web"
 
-const embedURL = ""
-if (embedURL === "") {
-	alert("Please set the embedURL variable in main.js:6, visit hyperbeam.dev to get your API key")
-} else {
-	main()
-}
+(async () => {
+	const room = location.pathname.substring(1)
+	const req = await fetch("https://demo-api.tutturu.workers.dev/" + room)
+	if (req.status >= 400) {
+		alert("We are out of demo servers! Visit hyperbeam.dev to get your own API key")
+		return
+	}
+	const body = await req.json()
+	if (body.room !== room) {
+		history.replaceState(null, null, "/" + body.room)
+	}
+	main(body.url)
+})()
 
-async function main() {
+async function main(embedURL) {
 	const scene = new THREE.Scene()
 	const pointer = new THREE.Vector2()
 	const raycaster = new THREE.Raycaster()
@@ -92,7 +99,7 @@ async function main() {
 		if (getPlaneIntersects().length > 0) {
 			hb.sendEvent({
 				type: "wheel",
-				deltaY: e.deltaY
+				deltaY: e.deltaY,
 			})
 		}
 	}
