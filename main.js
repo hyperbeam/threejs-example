@@ -45,6 +45,10 @@ async function main(embedURL) {
 	const width = 0.62
 	const height = width * 9 / 16
 	const texture = new THREE.Texture()
+	// force flipY to false, three.js is inconsistent with this behaviour
+	texture.flipY = false
+	texture.generateMipmaps = false
+
 	const geometry = new THREE.PlaneBufferGeometry(width, height)
 	const material = new THREE.MeshBasicMaterial({ map: texture })
 	// Need to offset for Three.js left-handed coordinate system
@@ -61,8 +65,18 @@ async function main(embedURL) {
 
 	const hb = await Hyperbeam(hbcontainer, embedURL, {
 		frameCb: (frame) => {
-			plane.material.map.image = frame
-			plane.material.map.needsUpdate = true
+			if (texture.image === null) {
+				if (frame.constructor === HTMLVideoElement) {
+					// hack: three.js internal methods check for .width and .height
+					// need to set manually for video so that three.js handles it correctly
+					frame.width = frame.videoWidth
+					frame.height = frame.videoHeight
+				}
+				texture.image = frame
+				texture.needsUpdate = true
+			} else {
+				renderer.copyTextureToTexture(new THREE.Vector2(0, 0), new THREE.Texture(frame), texture)
+			}
 		},
 		audioTrackCb: tryAudio
 	})
