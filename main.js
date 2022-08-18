@@ -4,17 +4,21 @@ import {OrbitControls} from "three/examples/jsm/controls/OrbitControls"
 import Hyperbeam from "@hyperbeam/web"
 
 (async () => {
-	const room = location.pathname.substring(1)
-	const req = await fetch("https://demo-api.tutturu.workers.dev/" + room)
-	if (req.status >= 400) {
-		alert("We are out of demo servers! Visit hyperbeam.dev to get your own API key")
-		return
+	let embedURL = "" // Running locally and you have an embed URL? Set it here
+	if (embedURL === "") {
+		const room = location.pathname.substring(1)
+		const req = await fetch("https://demo-api.tutturu.workers.dev/" + room)
+		if (req.status >= 400) {
+			alert("We are out of demo servers! Visit hyperbeam.dev to get your own API key")
+			return
+		}
+		const body = await req.json()
+		if (body.room !== room) {
+			history.replaceState(null, null, "/" + body.room)
+		}
+		embedURL = body.url
 	}
-	const body = await req.json()
-	if (body.room !== room) {
-		history.replaceState(null, null, "/" + body.room)
-	}
-	main(body.url)
+	main(embedURL)
 })()
 
 async function main(embedURL) {
