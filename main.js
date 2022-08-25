@@ -3,6 +3,7 @@ import * as THREE from "three"
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls"
 import {FontLoader} from "three/examples/jsm/loaders/FontLoader"
 import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry"
+import fontURL from "./fonts/helvetiker_regular.typeface.json?url"
 
 import Hyperbeam from "@hyperbeam/web"
 
@@ -88,7 +89,7 @@ async function main(embedURL) {
 
 	function loadFont() {
 		const loader = new FontLoader();
-		loader.load( 'fonts/helvetiker_regular.typeface.json', function ( response ) {
+		loader.load( fontURL, function ( response ) {
 			font = response;
 			createText();
 		} );
