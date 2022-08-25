@@ -1,7 +1,6 @@
 # threejs-example
 
 Hyperbeam virtual computers in Three.js! 🤯
-- [x] Less than 200 LoC 🐁
 - [x] Spatial audio 🎵
 - [x] Handles mouse, keyboard and wheel events 🖱️
 - [x] OrbitControls 🚀
