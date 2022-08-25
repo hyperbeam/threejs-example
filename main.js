@@ -1,6 +1,9 @@
 import "./style.css"
 import * as THREE from "three"
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls"
+import {FontLoader} from "three/examples/jsm/loaders/FontLoader"
+import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry"
+
 import Hyperbeam from "@hyperbeam/web"
 
 (async () => {
@@ -62,6 +65,53 @@ async function main(embedURL) {
 	scene.add(plane)
 	scene.add(checkerboardMesh(1, 15))
 	plane.add(sound)
+
+	// Start - Text
+	let textGroup, textMesh, textGeo, textMaterials;
+	let text = `Outside the virtual computer:\n\nLeft-click to rotate\nRight-click to pan\nScroll wheel for zoom`, font = 'helvetiker'
+	const textHeight = 0,
+	size = 0.015,
+	hover = 0.51,
+	curveSegments = 4
+
+	textMaterials = [
+		new THREE.MeshPhongMaterial( { color: 0xffffff, flatShading: true } ), // front
+		new THREE.MeshPhongMaterial( { color: 0xffffff } ) // side
+	];
+
+	textGroup = new THREE.Group();
+	textGroup.position.y = 0;
+	textGroup.position.x = -0.16;
+
+	scene.add( textGroup );
+	loadFont();
+
+	function loadFont() {
+		const loader = new FontLoader();
+		loader.load( 'fonts/helvetiker_regular.typeface.json', function ( response ) {
+			font = response;
+			createText();
+		} );
+	}
+
+	function createText() {
+		textGeo = new TextGeometry( text, {
+			font: font,
+			size: size,
+			height: textHeight,
+			curveSegments: curveSegments,
+		} );
+		textGeo.computeBoundingBox();
+		const centerOffset = - 0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
+		textMesh = new THREE.Mesh( textGeo, textMaterials );
+		textMesh.position.x = centerOffset;
+		textMesh.position.y = hover;
+		textMesh.position.z = 0;
+		textMesh.rotation.x = 0;
+		textMesh.rotation.y = Math.PI * 2;
+		textGroup.add( textMesh );
+	}
+	// End - Text
 
 	const hb = await Hyperbeam(hbcontainer, embedURL, {
 		frameCb: (frame) => {
