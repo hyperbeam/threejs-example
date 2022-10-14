@@ -18,7 +18,7 @@ import Hyperbeam from "@hyperbeam/web"
 		}
 		const body = await req.json()
 		if (body.room !== room) {
-			history.replaceState(null, null, "/" + body.room)
+			history.replaceState(null, null, "/" + body.room + location.search)
 		}
 		embedURL = body.url
 	}
@@ -139,6 +139,7 @@ async function main(embedURL) {
 	window.addEventListener("pointerdown", onPointerDown)
 	window.addEventListener("pointerup", onPointerUp)
 
+	setStartURL()
 	onWindowResized()
 	animate()
 
@@ -222,6 +223,14 @@ async function main(embedURL) {
 		window.requestAnimationFrame(animate)
 		controls.update()
 		renderer.render(scene, camera)
+	}
+
+	function setStartURL() {
+		const params = new URLSearchParams(location.search)
+		const startURL = params.get('url')
+		if (startURL) {
+			hb.tabs.update({url: startURL})
+		}
 	}
 }
 
