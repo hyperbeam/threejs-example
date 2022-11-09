@@ -71,9 +71,9 @@ async function main(embedURL) {
 	let textGroup, textMesh, textGeo, textMaterials;
 	let text = `Outside the virtual computer:\n\nLeft-click to rotate\nRight-click to pan\nScroll wheel for zoom`, font = 'helvetiker'
 	const textHeight = 0,
-	size = 0.015,
-	hover = 0.51,
-	curveSegments = 4
+		size = 0.015,
+		hover = 0.51,
+		curveSegments = 4
 
 	textMaterials = [
 		new THREE.MeshPhongMaterial( { color: 0xffffff, flatShading: true } ), // front
@@ -144,13 +144,10 @@ async function main(embedURL) {
 	animate()
 
 	function tryAudio(track) {
+		// sound.play() does not need to be called when calling setMediaStreamSource
+		// See https://threejs.org/docs/#api/en/audio/Audio.setMediaStreamSource
 		sound.setMediaStreamSource(new MediaStream([track]))
 		sound.setRefDistance(0.5)
-		// The audio context might be waiting on a user gesture
-		// In that case, we'll call sound.play() in the pointerdown handler
-		if (listener.context.state === "running") {
-			sound.play()
-		}
 	}
 
 	function onWindowResized() {
@@ -215,7 +212,6 @@ async function main(embedURL) {
 		// resume the audio context now since the user interacted with the page
 		if (listener.context.state === "suspended") {
 			await listener.context.resume()
-			await sound.play()
 		}
 	}
 
@@ -243,7 +239,6 @@ function checkerboardMesh(width, segments) {
 	})
 	const positionAttribute = geometry.getAttribute("position")
 	const colors = []
-	console.log(segments * segments, positionAttribute.count / 6)
 	for (let i = 0; i < positionAttribute.count; i++) {
 		colors.push(0, 0, 0, i % 6 === i % 12 ? 1 : 0)
 	}
